@@ -26,6 +26,100 @@ ChatExporterHtml::~ChatExporterHtml()
 {
 }
 
+std::string ChatExporterHtml::buildChats(std::vector<WhatsappChat *> chats)
+{
+	std::set<int> usedEmoticons;
+
+	std::stringstream output;
+
+	for (std::vector<WhatsappChat *>::iterator i = chats.begin(); i != chats.end(); ++i)
+	{
+		WhatsappChat &chat = **i;
+		std::string messages = buildMessages(chat, usedEmoticons);
+		std::string contact = chat.getKey();
+		if (chat.getSubject().length() > 0)
+		{
+			contact += "; " + chat.getSubject();
+		}
+		
+		std::string contactName = chat.getDisplayName();
+
+		if (contactName == contact)
+		{
+			contactName = "";
+		}
+
+		
+
+		output << "<div class=\"chat\">";
+		output << "<div class=\"chat_header\"><div><span class=\"heading\">%HEADING%</span></div>";
+		output << "<div>< span class = \"contact\">%CONTACT%</span></div>";
+		output << "<div><span class=\"contact\">%CONTACT_NAME% </span></div>";
+		output << "</div><div class=\"messages\">";
+			
+		std::vector<WhatsappMessage *> &messages = chat.getMessages(true);
+		for (std::vector<WhatsappMessage *>::iterator it = messages.begin(); it != messages.end(); ++it)
+		{
+			WhatsappMessage &message = **it;
+
+			output << "<div class=\"message ";
+
+			if (message.isFromMe())
+			{
+				output << "outgoing_message";
+			}
+			else
+			{
+				output << "incoming_message";
+			}
+
+			output << "\"><div class=\"text\">";
+
+			switch (message.getMediaWhatsappType())
+			{
+			case MEDIA_WHATSAPP_TEXT:
+			{
+				output << "<span>" << convertMessageToHtml(message, usedEmoticons) << "</span>";
+			} break;
+			case MEDIA_WHATSAPP_IMAGE:
+			{
+				if (message.getRawDataSize() > 0 && message.getRawData() != NULL)
+				{
+					output << "<div><img src=\"data:image/jpeg;base64," << base64_encode(message.getRawData(), message.getRawDataSize()) << "\"></div>" << std::endl;
+				}
+			} break;
+			case MEDIA_WHATSAPP_AUDIO:
+			{
+				output << "<span>[ " << formatAudio(message) << " ]</span>";
+			} break;
+			case MEDIA_WHATSAPP_VIDEO:
+			{
+				if (message.getRawDataSize() > 0 && message.getRawData() != NULL)
+				{
+					output << "<div><img src=\"data:image/jpeg;base64," << base64_encode(message.getRawData(), message.getRawDataSize()) << "\"></div>" << std::endl;
+				}
+				output << "<span>[ Video ]</span>";
+			} break;
+			case MEDIA_WHATSAPP_CONTACT:
+			{
+				output << "<span>[ Contact ]</span>";
+			} break;
+			case MEDIA_WHATSAPP_LOCATION:
+			{
+				output << "<span>[ Location: " << message.getLatitude() << "; " << message.getLongitude() << " ]</span>";
+			} break;
+			}
+
+			output << "</div><div class=\"timestamp\"><span>" << formatTimestamp(message.getTimestamp()) << "</span></div></div>" << std::endl;
+		}			
+			
+		output << "%MESSAGES%</div></div>";
+	}			
+
+	return output.str();
+}
+
+
 std::string ChatExporterHtml::buildMessages(WhatsappChat &chat, std::set<int> &usedEmoticons)
 {
 	std::stringstream output;
@@ -151,7 +245,7 @@ std::string ChatExporterHtml::buildEmoticonStyles(const std::set<int> &usedEmoti
 			std::string base64Emoticon = base64_encode(bytes, size);
 
 			css << ".emoticon_" << std::hex << character << " {" << std::endl;
-			css << "display: inline-block;" << std::endl;
+			css << "display: inline-block;" << std::endl;	
 			css << "width: 20px;" << std::endl;
 			css << "height: 20px;" << std::endl;
 			css << "background-image: url(data:image/png;base64," << base64Emoticon << ")" << std::endl;
@@ -196,4 +290,27 @@ void ChatExporterHtml::exportChat(WhatsappChat &chat, const std::string &filenam
 	replacePlaceholder(html, "%EMOTICON_STYLES%", buildEmoticonStyles(usedEmoticons));
 
 	file << html;
+}
+
+
+void ChatExporterHtml::exportChatAll(std::vector<WhatsappChat *> chats, const std::string &filename)
+{
+
+
+	std::ofstream file(filename.c_str());
+	if (!file)
+	{
+		throw Exception("could not open chat export file");
+	}
+
+	std::string html = templateHtml;
+	std::string heading = "WhatsApp Chat";
+
+	std::string chats = buildChats(chats);
+
+
+
+	
+	file << html;
+	file.close();
 }

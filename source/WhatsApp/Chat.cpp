@@ -38,7 +38,7 @@ long long WhatsappChat::getLastMessage() const
 	return lastMessage;
 }
 
-std::vector<WhatsappMessage *> WhatsappChat::getMessages(const volatile bool &running)
+std::vector<WhatsappMessage *> WhatsappChat::getMessages(bool running)
 {
 	if (!messagesLoaded)
 	{

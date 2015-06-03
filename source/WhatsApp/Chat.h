@@ -30,5 +30,5 @@ public:
 	long long getCreation() const;
 	long long getLastMessage() const;
 
-	std::vector<WhatsappMessage *> getMessages(const volatile bool &running);
+	std::vector<WhatsappMessage *> getMessages(bool running);
 };

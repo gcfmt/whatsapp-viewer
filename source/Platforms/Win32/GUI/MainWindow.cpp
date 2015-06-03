@@ -506,9 +506,20 @@ void MainWindow::exportChatAll(std::vector<WhatsappChat *> chats)
 {
 	std::string templateHtml = imageDecoder.loadString(MAKEINTRESOURCE(IDR_CHAT_EXPORT_HTML_TEMPLATE), RT_HTML);
 	ChatExporterHtml exporter(templateHtml);
-	for (std::vector<WhatsappChat *>::iterator it = chats.begin(); it != chats.end(); ++it)
+	
+	std::string filename;
+	std::stringstream suggestion;
+	std::stringstream filter;
+	suggestion << "WhatsApp Chat.html";
+	filter << "*." << "html";
+
+	if (saveFileDialog(filename, suggestion.str(), filter.str()))
 	{
-		exportChat(**it, exporter, "html");
+		exporter.exportChatAll(chats, filename);
+
+		std::stringstream message;
+		message << "Chats exported to file " << filename;
+		MessageBox(dialog, strtowstr(message.str()).c_str(), L"Success", MB_OK | MB_ICONINFORMATION);
 	}
 }
 

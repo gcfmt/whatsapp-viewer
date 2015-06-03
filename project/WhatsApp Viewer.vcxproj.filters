@@ -5784,5 +5784,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resources\chat_export.html.template" />
+    <None Include="..\resources\chat_export.html.all.template" />
   </ItemGroup>
 </Project>

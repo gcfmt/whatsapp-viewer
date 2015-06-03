@@ -1985,6 +1985,7 @@
     <ResourceCompile Include="..\resources\Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\resources\chat_export.html.all.template" />
     <None Include="..\resources\chat_export.html.template" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

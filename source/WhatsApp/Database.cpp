@@ -61,7 +61,7 @@ std::string WhatsappDatabase::findDisplayName(Settings &settings, const std::str
 	}
 }
 
-void WhatsappDatabase::getMessages(const std::string &chatId, std::vector<WhatsappMessage*> &messages, const volatile bool &running)
+void WhatsappDatabase::getMessages(const std::string &chatId, std::vector<WhatsappMessage*> &messages, bool running)
 {
 	QueryMessagesThread queryMessagesThread(*this, database, chatId, messages);
 	queryMessagesThread.start();

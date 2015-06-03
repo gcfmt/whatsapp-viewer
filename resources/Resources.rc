@@ -1066,7 +1066,8 @@ IDB_CLEAR_HOVER         PNG                     "ClearHover.png"
 // HTML
 //
 
-IDR_CHAT_EXPORT_HTML_TEMPLATE HTML                    "chat_export.html.template"
+IDR_CHAT_EXPORT_HTML_TEMPLATE		HTML        "chat_export.html.template"
+IDR_CHAT_EXPORT_HTML_ALL_TEMPLATE	HTML		"chat_export.html.all.template"
 
 /////////////////////////////////////////////////////////////////////////////
 //
