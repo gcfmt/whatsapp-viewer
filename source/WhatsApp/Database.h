@@ -21,6 +21,6 @@ public:
 	~WhatsappDatabase();
 
 	void getChats(Settings &settings, std::vector<WhatsappChat *> &chats);
-	void getMessages(const std::string &chatId, std::vector<WhatsappMessage *> &messages, const volatile bool &running);
+	void getMessages(const std::string &chatId, std::vector<WhatsappMessage *> &messages, bool running);
 
 };

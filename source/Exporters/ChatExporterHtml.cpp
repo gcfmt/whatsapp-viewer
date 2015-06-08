@@ -49,71 +49,16 @@ std::string ChatExporterHtml::buildChats(std::vector<WhatsappChat *> chats)
 			contactName = "";
 		}
 
-		
-
+		output << "<style type=\"text / css\">";
+		output << buildEmoticonStyles(usedEmoticons);
+		output << "</style>";
 		output << "<div class=\"chat\">";
-		output << "<div class=\"chat_header\"><div><span class=\"heading\">%HEADING%</span></div>";
-		output << "<div>< span class = \"contact\">%CONTACT%</span></div>";
-		output << "<div><span class=\"contact\">%CONTACT_NAME% </span></div>";
+		output << "<div class=\"chat_header\"><div><span class=\"heading\">WhatsApp Chat</span></div>";
+		output << "<div><span class=\"contact\">"+contact+"</span></div>";
+		output << "<div><span class=\"contact\">"+contactName+" </span></div>";
 		output << "</div><div class=\"messages\">";
-			
-		std::vector<WhatsappMessage *> &messages = chat.getMessages(true);
-		for (std::vector<WhatsappMessage *>::iterator it = messages.begin(); it != messages.end(); ++it)
-		{
-			WhatsappMessage &message = **it;
-
-			output << "<div class=\"message ";
-
-			if (message.isFromMe())
-			{
-				output << "outgoing_message";
-			}
-			else
-			{
-				output << "incoming_message";
-			}
-
-			output << "\"><div class=\"text\">";
-
-			switch (message.getMediaWhatsappType())
-			{
-			case MEDIA_WHATSAPP_TEXT:
-			{
-				output << "<span>" << convertMessageToHtml(message, usedEmoticons) << "</span>";
-			} break;
-			case MEDIA_WHATSAPP_IMAGE:
-			{
-				if (message.getRawDataSize() > 0 && message.getRawData() != NULL)
-				{
-					output << "<div><img src=\"data:image/jpeg;base64," << base64_encode(message.getRawData(), message.getRawDataSize()) << "\"></div>" << std::endl;
-				}
-			} break;
-			case MEDIA_WHATSAPP_AUDIO:
-			{
-				output << "<span>[ " << formatAudio(message) << " ]</span>";
-			} break;
-			case MEDIA_WHATSAPP_VIDEO:
-			{
-				if (message.getRawDataSize() > 0 && message.getRawData() != NULL)
-				{
-					output << "<div><img src=\"data:image/jpeg;base64," << base64_encode(message.getRawData(), message.getRawDataSize()) << "\"></div>" << std::endl;
-				}
-				output << "<span>[ Video ]</span>";
-			} break;
-			case MEDIA_WHATSAPP_CONTACT:
-			{
-				output << "<span>[ Contact ]</span>";
-			} break;
-			case MEDIA_WHATSAPP_LOCATION:
-			{
-				output << "<span>[ Location: " << message.getLatitude() << "; " << message.getLongitude() << " ]</span>";
-			} break;
-			}
-
-			output << "</div><div class=\"timestamp\"><span>" << formatTimestamp(message.getTimestamp()) << "</span></div></div>" << std::endl;
-		}			
-			
-		output << "%MESSAGES%</div></div>";
+		output << messages;
+		output << "</div></div></br>";
 	}			
 
 	return output.str();
@@ -295,22 +240,18 @@ void ChatExporterHtml::exportChat(WhatsappChat &chat, const std::string &filenam
 
 void ChatExporterHtml::exportChatAll(std::vector<WhatsappChat *> chats, const std::string &filename)
 {
-
-
 	std::ofstream file(filename.c_str());
 	if (!file)
 	{
 		throw Exception("could not open chat export file");
 	}
-
 	std::string html = templateHtml;
-	std::string heading = "WhatsApp Chat";
 
-	std::string chats = buildChats(chats);
+	std::string chatsStr = buildChats(chats);
 
-
-
-	
+	replacePlaceholder(html, "%CHATS%", chatsStr);
+	replacePlaceholder(html, "%TITLE%", "WhatsApp - Relatório de Conversações");
+		
 	file << html;
 	file.close();
 }

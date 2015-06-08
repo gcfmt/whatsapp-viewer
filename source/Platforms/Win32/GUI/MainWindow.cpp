@@ -504,7 +504,7 @@ void MainWindow::exportChatToHtml(WhatsappChat &chat)
 
 void MainWindow::exportChatAll(std::vector<WhatsappChat *> chats)
 {
-	std::string templateHtml = imageDecoder.loadString(MAKEINTRESOURCE(IDR_CHAT_EXPORT_HTML_TEMPLATE), RT_HTML);
+	std::string templateHtml = imageDecoder.loadString(MAKEINTRESOURCE(IDR_CHAT_EXPORT_HTML_ALL_TEMPLATE), RT_HTML);
 	ChatExporterHtml exporter(templateHtml);
 	
 	std::string filename;
